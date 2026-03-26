@@ -129,5 +129,6 @@ promptInput.addEventListener("input", () => {
   promptInput.style.height = "auto";
   promptInput.style.height = Math.min(promptInput.scrollHeight, 220) + "px";
 });
-
-newChatBtn.addEventListener("click", resetChat);
+if(newChatBtn) {
+    newChatBtn.addEventListener("click", resetChat);
+}
