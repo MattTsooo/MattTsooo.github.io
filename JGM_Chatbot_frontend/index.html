@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>JGM Eclipse</title>
+        <link rel="stylesheet" href="style.css"/>
+    </head>
+    <body>
+        <main>
+            <h1>JGM Eclipse</h1>
+
+            <label for="mode">Mode</label>
+            <select id="mode">
+                <option value="blog">Audit Blog</option>
+                <option value="dashboard">Audit Dashboard</option>
+            </select>
+
+            <label for="content">Paste Content</label>
+            <textarea id="content" rows="14" placeholder="Paste blog or dashboard text here"></textarea>
+
+            <button id="runBtn">Run Audit</button>
+
+            <pre id="output"></pre>
+        </main>
+
+        <script src="app.js"></script>
+    </body>
+</html>
