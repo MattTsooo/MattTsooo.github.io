@@ -1,9 +1,9 @@
 const chat = document.getElementById("chat");
 const promptInput = document.getElementById("prompt");
 const sendBtn = document.getElementById("sendBtn");
-const modeSelect = document.getElementById("mode");
+const newChatBtn = document.getElementById("newChatBtn");
 
-const BACKEND_URL = "bot0cba90.azurewebsites.net/audit";
+const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
 
 function addMessage(role, text = "") {
   const row = document.createElement("div");
@@ -24,8 +24,8 @@ function addMessage(role, text = "") {
   message.appendChild(content);
   row.appendChild(message);
   chat.appendChild(row);
-  chat.scrollTop = chat.scrollHeight;
 
+  scrollChatToBottom();
   return content;
 }
 
@@ -51,7 +51,7 @@ function showTypingIndicator() {
   };
 }
 
-async function typeText(contentEl, text, speed = 12) {
+async function typeText(contentEl, text, speed = 8) {
   contentEl.textContent = "";
   for (let i = 0; i < text.length; i++) {
     contentEl.textContent += text[i];
@@ -60,30 +60,33 @@ async function typeText(contentEl, text, speed = 12) {
   }
 }
 
-async function streamResponse(contentEl, response) {
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder("utf-8");
+function resetChat() {
+  chat.innerHTML = `
+    <div class="message-row">
+      <div class="message bot">
+        <div class="avatar bot">AI</div>
+        <div class="message-content">Hi — I can help with blog posts and dashboards.
 
-  contentEl.textContent = "";
+Use:
+• /auditblog
+• /auditdashboard
+• /help
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-
-    const chunk = decoder.decode(value, { stream: true });
-    contentEl.textContent += chunk;
-    scrollChatToBottom();
-  }
+Or just ask a question.</div>
+      </div>
+    </div>
+  `;
+  promptInput.value = "";
+  promptInput.focus();
 }
 
 async function handleSend() {
   const text = promptInput.value.trim();
-  const mode = modeSelect.value;
-
   if (!text) return;
 
   addMessage("user", text);
   promptInput.value = "";
+  sendBtn.disabled = true;
 
   const typing = showTypingIndicator();
 
@@ -93,28 +96,23 @@ async function handleSend() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ mode, text })
+      body: JSON.stringify({ text })
     });
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
 
+    const data = await response.json();
+
     typing.stop();
-
-    const botContent = typing.content;
-
-    const contentType = response.headers.get("content-type") || "";
-
-    if (response.body && !contentType.includes("application/json")) {
-      await streamResponse(botContent, response);
-    } else {
-      const data = await response.json();
-      await typeText(botContent, data.reply || "No response returned.");
-    }
+    await typeText(typing.content, data.reply || "No response returned.");
   } catch (error) {
     typing.stop();
     await typeText(typing.content, `Error: ${error.message}`);
+  } finally {
+    sendBtn.disabled = false;
+    promptInput.focus();
   }
 }
 
@@ -126,3 +124,10 @@ promptInput.addEventListener("keydown", (e) => {
     handleSend();
   }
 });
+
+promptInput.addEventListener("input", () => {
+  promptInput.style.height = "auto";
+  promptInput.style.height = Math.min(promptInput.scrollHeight, 220) + "px";
+});
+
+newChatBtn.addEventListener("click", resetChat);

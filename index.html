@@ -9,13 +9,6 @@
 <body>
   <aside class="sidebar">
     <button class="new-chat-btn">+ New chat</button>
-
-    <div class="sidebar-section-title">Recent</div>
-    <div class="chat-history">
-      <div class="history-item">Blog audit draft</div>
-      <div class="history-item">Dashboard review</div>
-      <div class="history-item">Rewrite opening paragraph</div>
-    </div>
   </aside>
 
   <main class="main">
@@ -31,8 +24,9 @@ Hi — I can audit blog posts and dashboards.
 Try:
 • /auditblog
 • /auditdashboard
+• /help
 
-Or just paste content and I’ll help refine it.
+Or just ask a question.
           </div>
         </div>
       </div>
@@ -40,19 +34,11 @@ Or just paste content and I’ll help refine it.
 
     <div class="composer-wrap">
       <div class="composer">
-        <textarea id="prompt" placeholder="Message JGM Audit Bot..."></textarea>
-
+        <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
         <div class="composer-actions">
-          <select id="mode" class="mode-select">
-            <option value="blog">Audit Blog</option>
-            <option value="dashboard">Audit Dashboard</option>
-            <option value="chat">General Chat</option>
-          </select>
-
-          <button id="sendBtn" class="send-btn">Send</button>
+            <button id="sendBtn" class="send-btn">Send</button>
         </div>
       </div>
-      <div class="hint">This is a frontend shell. Wire the Send button to your backend next.</div>
     </div>
   </main>
 
