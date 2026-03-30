@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>JGM Eclipse</title>
-  <link rel="stylesheet" href="style.css?v=20260330-3" />
+  <link rel="stylesheet" href="style.css?v=20260330-4" />
 </head>
 <body>
   <div class="app-shell">
@@ -31,6 +31,24 @@
     <div id="chatApp" class="chat-app hidden" aria-hidden="true">
       <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Close menu"></button>
 
+      <div id="overscrollLogoTop" class="overscroll-logo overscroll-logo-top" aria-hidden="true">
+        <div class="logo-badge">
+          <img src="logo-jgm.svg" alt="" class="logo-image" />
+        </div>
+      </div>
+
+      <div id="overscrollLogoLeft" class="overscroll-logo overscroll-logo-left" aria-hidden="true">
+        <div class="logo-badge">
+          <img src="logo-jgm.svg" alt="" class="logo-image" />
+        </div>
+      </div>
+
+      <div id="overscrollLogoRight" class="overscroll-logo overscroll-logo-right" aria-hidden="true">
+        <div class="logo-badge">
+          <img src="logo-jgm.svg" alt="" class="logo-image" />
+        </div>
+      </div>
+
       <aside id="sidebarPanel" class="sidebar">
         <div class="brand-block">
           <p class="eyebrow">Workspace</p>
@@ -52,6 +70,9 @@
       <main class="main">
         <div class="topbar">
           <div class="topbar-main">
+            <div class="brand-logo-shell">
+              <img src="logo-jgm.svg" alt="JGM logo" class="logo-image" />
+            </div>
             <button
               id="mobileMenuBtn"
               class="mobile-menu-btn"
@@ -100,7 +121,7 @@ Or just ask a question.
   </div>
 
   <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
-  <script src="msal.js?v=20260330-3"></script>
-  <script src="app.js?v=20260330-3"></script>
+  <script src="msal.js?v=20260330-4"></script>
+  <script src="app.js?v=20260330-4"></script>
 </body>
 </html>

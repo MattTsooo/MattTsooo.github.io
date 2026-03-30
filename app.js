@@ -8,13 +8,71 @@ const signedInUser = document.getElementById("signedInUser");
 const topbarStatus = document.getElementById("topbarStatus");
 const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+const composerWrap = document.querySelector(".composer-wrap");
+const overscrollLogoTop = document.getElementById("overscrollLogoTop");
+const overscrollLogoLeft = document.getElementById("overscrollLogoLeft");
+const overscrollLogoRight = document.getElementById("overscrollLogoRight");
 
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
 const mobileMenuQuery = window.matchMedia("(max-width: 900px)");
+const overscrollState = {
+  startX: 0,
+  startY: 0,
+  active: false
+};
 
 function resetComposerHeight() {
   if (!promptInput) return;
   promptInput.style.height = "auto";
+  queueComposerMetrics();
+}
+
+function updateComposerMetrics() {
+  if (!composerWrap) return;
+  const composerHeight = Math.ceil(composerWrap.getBoundingClientRect().height);
+  const extraClearance = mobileMenuQuery.matches ? 28 : 20;
+  document.documentElement.style.setProperty(
+    "--composer-clearance",
+    `${composerHeight + extraClearance}px`
+  );
+}
+
+function queueComposerMetrics() {
+  window.requestAnimationFrame(updateComposerMetrics);
+}
+
+function setLogoRevealState(element, opacity, transform) {
+  if (!element) return;
+  element.style.opacity = opacity > 0 ? `${opacity}` : "0";
+  element.style.transform = transform;
+}
+
+function resetOverscrollReveal() {
+  setLogoRevealState(overscrollLogoTop, 0, "translate(-50%, -110px) scale(0.86)");
+  setLogoRevealState(overscrollLogoLeft, 0, "translate(-110px, -50%) scale(0.86)");
+  setLogoRevealState(overscrollLogoRight, 0, "translate(110px, -50%) scale(0.86)");
+}
+
+function updateOverscrollReveal(deltaX, deltaY) {
+  const topPull = chat.scrollTop <= 0 ? Math.max(0, Math.min(92, deltaY * 0.42)) : 0;
+  const leftPull = Math.max(0, Math.min(92, deltaX * 0.34));
+  const rightPull = Math.max(0, Math.min(92, -deltaX * 0.34));
+
+  setLogoRevealState(
+    overscrollLogoTop,
+    Math.min(1, topPull / 64),
+    `translate(-50%, ${-110 + topPull}px) scale(${0.86 + topPull / 360})`
+  );
+  setLogoRevealState(
+    overscrollLogoLeft,
+    Math.min(1, leftPull / 64),
+    `translate(${-110 + leftPull}px, -50%) scale(${0.86 + leftPull / 360})`
+  );
+  setLogoRevealState(
+    overscrollLogoRight,
+    Math.min(1, rightPull / 64),
+    `translate(${110 - rightPull}px, -50%) scale(${0.86 + rightPull / 360})`
+  );
 }
 
 function syncMobileMenuButton() {
@@ -78,6 +136,8 @@ function setAuthenticatedUI(isAuthenticated, username = "") {
   if (isAuthenticated) {
     promptInput.focus();
   }
+
+  queueComposerMetrics();
 }
 
 function addMessage(role, text = "") {
@@ -241,6 +301,7 @@ promptInput.addEventListener("keydown", (e) => {
 promptInput.addEventListener("input", () => {
   promptInput.style.height = "auto";
   promptInput.style.height = Math.min(promptInput.scrollHeight, 160) + "px";
+  queueComposerMetrics();
 });
 
 if (newChatBtn) {
@@ -263,12 +324,44 @@ window.addEventListener("resize", () => {
   if (!mobileMenuQuery.matches) {
     closeMobileMenu();
   }
+  queueComposerMetrics();
 });
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", queueComposerMetrics);
+}
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeMobileMenu();
   }
+});
+
+chat.addEventListener("touchstart", (event) => {
+  if (!mobileMenuQuery.matches || event.touches.length !== 1) return;
+  overscrollState.active = true;
+  overscrollState.startX = event.touches[0].clientX;
+  overscrollState.startY = event.touches[0].clientY;
+});
+
+chat.addEventListener("touchmove", (event) => {
+  if (!mobileMenuQuery.matches || !overscrollState.active || event.touches.length !== 1) return;
+
+  const currentTouch = event.touches[0];
+  updateOverscrollReveal(
+    currentTouch.clientX - overscrollState.startX,
+    currentTouch.clientY - overscrollState.startY
+  );
+}, { passive: true });
+
+chat.addEventListener("touchend", () => {
+  overscrollState.active = false;
+  resetOverscrollReveal();
+});
+
+chat.addEventListener("touchcancel", () => {
+  overscrollState.active = false;
+  resetOverscrollReveal();
 });
 
 window.addEventListener("auth-state-changed", (event) => {
@@ -281,3 +374,5 @@ window.addEventListener("auth-state-changed", (event) => {
 });
 
 setAuthenticatedUI(false, "");
+resetOverscrollReveal();
+queueComposerMetrics();
