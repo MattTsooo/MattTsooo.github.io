@@ -1,6 +1,6 @@
 const TENANT_ID = "d48b4dfc-4161-4966-b876-0c52e9d733e7";
 const CLIENT_ID = "967c6051-40fd-4acf-adbf-8f61359f253d";
-const ASSET_VERSION = "20260329-9";
+const ASSET_VERSION = "20260329-10";
 
 function ensureFreshStylesheet() {
   const stylesheet = document.querySelector('link[rel="stylesheet"]');
@@ -69,7 +69,7 @@ function ensureCurrentAppShell() {
           <section class="chat-container" id="chat">
             <div class="message-row">
               <div class="message bot">
-                <div class="avatar bot">AI</div>
+                <div class="avatar bot">Eclipse</div>
                 <div class="message-content">
 Hi — I can audit blog posts and dashboards.
 

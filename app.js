@@ -63,7 +63,7 @@ function addMessage(role, text = "") {
 
   const avatar = document.createElement("div");
   avatar.className = `avatar ${role}`;
-  avatar.textContent = role === "user" ? "You" : "AI";
+  avatar.textContent = role === "user" ? "You" : "Eclipse";
 
   const content = document.createElement("div");
   content.className = "message-content";
@@ -113,7 +113,7 @@ function resetChat() {
   chat.innerHTML = `
     <div class="message-row">
       <div class="message bot">
-        <div class="avatar bot">AI</div>
+        <div class="avatar bot">Eclipse</div>
         <div class="message-content">Hi — I can help with blog posts and dashboards.
 
 Use:

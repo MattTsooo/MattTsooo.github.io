@@ -285,14 +285,15 @@ body.authenticated .chat-app {
 }
 
 .avatar {
-  width: 50px;
+  min-width: 74px;
   height: 34px;
+  padding: 0 12px;
   border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: #fff;
 }
