@@ -9,6 +9,7 @@ const topbarStatus = document.getElementById("topbarStatus");
 const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 const sidebarBackdrop = document.getElementById("sidebarBackdrop");
 const composerWrap = document.querySelector(".composer-wrap");
+const topbarElement = document.querySelector(".topbar");
 const overscrollLogoTop = document.getElementById("overscrollLogoTop");
 const overscrollLogoLeft = document.getElementById("overscrollLogoLeft");
 const overscrollLogoRight = document.getElementById("overscrollLogoRight");
@@ -35,6 +36,13 @@ function updateComposerMetrics() {
     "--composer-clearance",
     `${composerHeight + extraClearance}px`
   );
+
+  if (topbarElement) {
+    document.documentElement.style.setProperty(
+      "--topbar-clearance",
+      `${Math.ceil(topbarElement.getBoundingClientRect().height)}px`
+    );
+  }
 }
 
 function queueComposerMetrics() {
@@ -48,30 +56,34 @@ function setLogoRevealState(element, opacity, transform) {
 }
 
 function resetOverscrollReveal() {
-  setLogoRevealState(overscrollLogoTop, 0, "translate(-50%, -110px) scale(0.86)");
-  setLogoRevealState(overscrollLogoLeft, 0, "translate(-110px, -50%) scale(0.86)");
-  setLogoRevealState(overscrollLogoRight, 0, "translate(110px, -50%) scale(0.86)");
+  setLogoRevealState(overscrollLogoTop, 0, "translate(-50%, -74px) scale(0.58)");
+  setLogoRevealState(overscrollLogoLeft, 0, "translate(-74px, -50%) scale(0.58)");
+  setLogoRevealState(overscrollLogoRight, 0, "translate(74px, -50%) scale(0.58)");
 }
 
 function updateOverscrollReveal(deltaX, deltaY) {
-  const topPull = chat.scrollTop <= 0 ? Math.max(0, Math.min(92, deltaY * 0.42)) : 0;
-  const leftPull = Math.max(0, Math.min(92, deltaX * 0.34));
-  const rightPull = Math.max(0, Math.min(92, -deltaX * 0.34));
+  const rawTopPull = chat.scrollTop <= 0 ? Math.max(0, Math.min(120, deltaY * 0.44)) : 0;
+  const rawLeftPull = Math.max(0, Math.min(120, deltaX * 0.34));
+  const rawRightPull = Math.max(0, Math.min(120, -deltaX * 0.34));
+
+  const topPull = Math.max(0, rawTopPull - 10);
+  const leftPull = Math.max(0, rawLeftPull - 10);
+  const rightPull = Math.max(0, rawRightPull - 10);
 
   setLogoRevealState(
     overscrollLogoTop,
-    Math.min(1, topPull / 64),
-    `translate(-50%, ${-110 + topPull}px) scale(${0.86 + topPull / 360})`
+    Math.min(0.95, topPull / 110),
+    `translate(-50%, ${-74 + topPull * 0.34}px) scale(${0.58 + topPull / 320})`
   );
   setLogoRevealState(
     overscrollLogoLeft,
-    Math.min(1, leftPull / 64),
-    `translate(${-110 + leftPull}px, -50%) scale(${0.86 + leftPull / 360})`
+    Math.min(0.95, leftPull / 110),
+    `translate(${-74 + leftPull * 0.34}px, -50%) scale(${0.58 + leftPull / 320})`
   );
   setLogoRevealState(
     overscrollLogoRight,
-    Math.min(1, rightPull / 64),
-    `translate(${110 - rightPull}px, -50%) scale(${0.86 + rightPull / 360})`
+    Math.min(0.95, rightPull / 110),
+    `translate(${74 - rightPull * 0.34}px, -50%) scale(${0.58 + rightPull / 320})`
   );
 }
 

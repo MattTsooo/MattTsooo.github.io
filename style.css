@@ -16,6 +16,7 @@
   --sidebar-width: 280px;
   --content-width: 860px;
   --composer-clearance: 176px;
+  --topbar-clearance: 64px;
 }
 
 * {
@@ -196,9 +197,10 @@ body.authenticated .chat-app {
 
 .overscroll-logo {
   position: fixed;
-  z-index: 32;
+  z-index: 6;
   pointer-events: none;
   opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .overscroll-logo .logo-badge {
@@ -208,21 +210,21 @@ body.authenticated .chat-app {
 }
 
 .overscroll-logo-top {
-  top: calc(env(safe-area-inset-top) + 12px);
+  top: calc(var(--topbar-clearance) + 8px);
   left: 50%;
-  transform: translate(-50%, -110px) scale(0.86);
+  transform: translate(-50%, -74px) scale(0.58);
 }
 
 .overscroll-logo-left {
   top: 50%;
   left: 12px;
-  transform: translate(-110px, -50%) scale(0.86);
+  transform: translate(-74px, -50%) scale(0.58);
 }
 
 .overscroll-logo-right {
   top: 50%;
   right: 12px;
-  transform: translate(110px, -50%) scale(0.86);
+  transform: translate(74px, -50%) scale(0.58);
 }
 
 .brand-block {
@@ -347,6 +349,8 @@ body.authenticated .chat-app {
   gap: 20px;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 12;
 }
 
 .message-row {
@@ -414,6 +418,7 @@ body.authenticated .chat-app {
   bottom: 0;
   padding: 12px 20px 16px;
   background: linear-gradient(to top, rgba(5, 5, 5, 0.98) 72%, rgba(5, 5, 5, 0));
+  z-index: 20;
 }
 
 .composer {

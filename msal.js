@@ -1,6 +1,6 @@
 const TENANT_ID = "d48b4dfc-4161-4966-b876-0c52e9d733e7";
 const CLIENT_ID = "967c6051-40fd-4acf-adbf-8f61359f253d";
-const ASSET_VERSION = "20260330-4";
+const ASSET_VERSION = "20260330-6";
 
 function ensureFreshStylesheet() {
   const stylesheet = document.querySelector('link[rel="stylesheet"]');
@@ -46,19 +46,19 @@ function ensureCurrentAppShell() {
 
         <div id="overscrollLogoTop" class="overscroll-logo overscroll-logo-top" aria-hidden="true">
           <div class="logo-badge">
-            <img src="logo-jgm.svg" alt="" class="logo-image" />
+            <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="" class="logo-image" />
           </div>
         </div>
 
         <div id="overscrollLogoLeft" class="overscroll-logo overscroll-logo-left" aria-hidden="true">
           <div class="logo-badge">
-            <img src="logo-jgm.svg" alt="" class="logo-image" />
+            <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="" class="logo-image" />
           </div>
         </div>
 
         <div id="overscrollLogoRight" class="overscroll-logo overscroll-logo-right" aria-hidden="true">
           <div class="logo-badge">
-            <img src="logo-jgm.svg" alt="" class="logo-image" />
+            <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="" class="logo-image" />
           </div>
         </div>
 
@@ -83,9 +83,6 @@ function ensureCurrentAppShell() {
         <main class="main">
           <div class="topbar">
             <div class="topbar-main">
-              <div class="brand-logo-shell">
-                <img src="logo-jgm.svg" alt="JGM logo" class="logo-image" />
-              </div>
               <button
                 id="mobileMenuBtn"
                 class="mobile-menu-btn"
@@ -98,7 +95,10 @@ function ensureCurrentAppShell() {
                 <span></span>
                 <span></span>
               </button>
-              <span class="topbar-title">JGM Eclipse</span>
+              <div class="brand-logo-shell">
+                <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="JGM logo" class="logo-image" />
+              </div>
+              <span class="topbar-title">Eclipse</span>
             </div>
             <span id="topbarStatus" class="topbar-status">Checking sign-in...</span>
           </div>
