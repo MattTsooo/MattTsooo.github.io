@@ -202,7 +202,7 @@ body.authenticated .chat-app {
 }
 
 .brand-logo-shell .logo-image {
-  transform: translate(4px, 0) scale(1.04);
+  transform: translate(0, 4px) scale(1.03);
 }
 
 .brand-block {
