@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>JGM Eclipse</title>
-        <link rel="stylesheet" href="style.css"/>
-    </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JGM Eclipse</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
 <body>
   <aside class="sidebar">
+    <button id="loginBtn" class="new-chat-btn">Login with Microsoft</button>
     <button id="newChatBtn" class="new-chat-btn">+ New chat</button>
   </aside>
 
@@ -36,12 +37,14 @@ Or just ask a question.
       <div class="composer">
         <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
         <div class="composer-actions">
-            <button id="sendBtn" class="send-btn">Send</button>
+          <button id="sendBtn" class="send-btn">Send</button>
         </div>
       </div>
     </div>
   </main>
 
+  <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
+  <script src="msal.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

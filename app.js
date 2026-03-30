@@ -80,9 +80,44 @@ Or just ask a question.</div>
   promptInput.focus();
 }
 
+async function sendMessage(text) {
+  const token = localStorage.getItem("id_token");
+
+  if (!token) {
+    throw new Error("Please log in first.");
+  }
+
+  const response = await fetch(BACKEND_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ text })
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Please log in again.");
+    }
+    if (response.status === 403) {
+      throw new Error("You are not authorized to use this app.");
+    }
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
 async function handleSend() {
   const text = promptInput.value.trim();
   if (!text) return;
+
+  const token = localStorage.getItem("id_token");
+  if (!token) {
+    addMessage("bot", "Please log in with Microsoft first.");
+    return;
+  }
 
   addMessage("user", text);
   promptInput.value = "";
@@ -91,20 +126,7 @@ async function handleSend() {
   const typing = showTypingIndicator();
 
   try {
-    const response = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ text })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-
+    const data = await sendMessage(text);
     typing.stop();
     await typeText(typing.content, data.reply || "No response returned.");
   } catch (error) {
@@ -129,6 +151,7 @@ promptInput.addEventListener("input", () => {
   promptInput.style.height = "auto";
   promptInput.style.height = Math.min(promptInput.scrollHeight, 220) + "px";
 });
-if(newChatBtn) {
-    newChatBtn.addEventListener("click", resetChat);
+
+if (newChatBtn) {
+  newChatBtn.addEventListener("click", resetChat);
 }
