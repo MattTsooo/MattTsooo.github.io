@@ -474,6 +474,7 @@ body.authenticated .chat-app {
   }
 
   .sidebar-backdrop {
+    display: block;
     position: fixed;
     inset: 0;
     z-index: 35;
