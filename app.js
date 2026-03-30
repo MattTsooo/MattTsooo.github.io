@@ -2,8 +2,49 @@ const chat = document.getElementById("chat");
 const promptInput = document.getElementById("prompt");
 const sendBtn = document.getElementById("sendBtn");
 const newChatBtn = document.getElementById("newChatBtn");
+const loginView = document.getElementById("loginView");
+const chatApp = document.getElementById("chatApp");
+const signedInUser = document.getElementById("signedInUser");
+const topbarStatus = document.getElementById("topbarStatus");
 
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
+
+function setAuthenticatedUI(isAuthenticated, username = "") {
+  if (loginView) {
+    loginView.classList.toggle("hidden", isAuthenticated);
+    loginView.setAttribute("aria-hidden", isAuthenticated ? "true" : "false");
+  }
+
+  if (chatApp) {
+    chatApp.classList.toggle("hidden", !isAuthenticated);
+    chatApp.setAttribute("aria-hidden", !isAuthenticated ? "true" : "false");
+  }
+
+  if (signedInUser) {
+    signedInUser.textContent = username || "No active account";
+  }
+
+  if (topbarStatus) {
+    topbarStatus.textContent = isAuthenticated
+      ? `Signed in as ${username || "Microsoft user"}`
+      : "Signed out";
+  }
+
+  if (sendBtn) {
+    sendBtn.disabled = !isAuthenticated;
+  }
+
+  if (promptInput) {
+    promptInput.disabled = !isAuthenticated;
+    promptInput.placeholder = isAuthenticated
+      ? "Message JGM Eclipse..."
+      : "Sign in to start chatting";
+  }
+
+  if (isAuthenticated) {
+    promptInput.focus();
+  }
+}
 
 function addMessage(role, text = "") {
   const row = document.createElement("div");
@@ -77,17 +118,19 @@ Or just ask a question.</div>
     </div>
   `;
   promptInput.value = "";
-  promptInput.focus();
+  if (!promptInput.disabled) {
+    promptInput.focus();
+  }
 }
 
 async function sendMessage(text) {
-  const token = localStorage.getItem("id_token");
+  let token = window.authClient?.getIdToken() || localStorage.getItem("id_token");
 
   if (!token) {
     throw new Error("Please log in first.");
   }
 
-  const response = await fetch(BACKEND_URL, {
+  let response = await fetch(BACKEND_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -95,6 +138,18 @@ async function sendMessage(text) {
     },
     body: JSON.stringify({ text })
   });
+
+  if (response.status === 401 && window.authClient?.refreshIdToken) {
+    token = await window.authClient.refreshIdToken();
+    response = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ text })
+    });
+  }
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -113,7 +168,7 @@ async function handleSend() {
   const text = promptInput.value.trim();
   if (!text) return;
 
-  const token = localStorage.getItem("id_token");
+  const token = window.authClient?.getIdToken() || localStorage.getItem("id_token");
   if (!token) {
     addMessage("bot", "Please log in with Microsoft first.");
     return;
@@ -155,3 +210,14 @@ promptInput.addEventListener("input", () => {
 if (newChatBtn) {
   newChatBtn.addEventListener("click", resetChat);
 }
+
+window.addEventListener("auth-state-changed", (event) => {
+  const { isAuthenticated, username } = event.detail;
+  setAuthenticatedUI(isAuthenticated, username);
+
+  if (!isAuthenticated) {
+    resetChat();
+  }
+});
+
+setAuthenticatedUI(false, "");

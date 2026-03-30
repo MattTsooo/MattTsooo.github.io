@@ -7,19 +7,54 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <aside class="sidebar">
-    <button id="loginBtn" class="new-chat-btn">Login with Microsoft</button>
-    <button id="newChatBtn" class="new-chat-btn">+ New chat</button>
-  </aside>
+  <div class="app-shell">
+    <section id="loginView" class="login-view">
+      <div class="login-card">
+        <div class="login-copy">
+          <p class="eyebrow">JGM Eclipse</p>
+          <h1>Sign in before using the chatbot.</h1>
+          <p class="login-text">
+            Use your Microsoft work account to access blog and dashboard audits.
+          </p>
+        </div>
 
-  <main class="main">
-    <div class="topbar">JGM Eclipse</div>
+        <div class="login-actions">
+          <button id="loginBtn" class="login-btn">Continue with Microsoft</button>
+          <p id="authMessage" class="auth-message" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
 
-    <section class="chat-container" id="chat">
-      <div class="message-row">
-        <div class="message bot">
-          <div class="avatar bot">AI</div>
-          <div class="message-content">
+    <div id="chatApp" class="chat-app hidden" aria-hidden="true">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <p class="eyebrow">Workspace</p>
+          <h2>JGM Eclipse</h2>
+        </div>
+
+        <div id="signedInBadge" class="signed-in-badge" aria-live="polite">
+          <span class="status-dot"></span>
+          <div>
+            <p class="status-label">Signed in</p>
+            <p id="signedInUser" class="status-user">Loading account...</p>
+          </div>
+        </div>
+
+        <button id="newChatBtn" class="new-chat-btn">+ New chat</button>
+        <button id="logoutBtn" class="secondary-btn" type="button">Sign out</button>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <span>JGM Eclipse</span>
+          <span id="topbarStatus" class="topbar-status">Checking sign-in...</span>
+        </div>
+
+        <section class="chat-container" id="chat">
+          <div class="message-row">
+            <div class="message bot">
+              <div class="avatar bot">AI</div>
+              <div class="message-content">
 Hi — I can audit blog posts and dashboards.
 
 Try:
@@ -28,20 +63,22 @@ Try:
 • /help
 
 Or just ask a question.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="composer-wrap">
+          <div class="composer">
+            <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
+            <div class="composer-actions">
+              <button id="sendBtn" class="send-btn">Send</button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <div class="composer-wrap">
-      <div class="composer">
-        <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
-        <div class="composer-actions">
-          <button id="sendBtn" class="send-btn">Send</button>
-        </div>
-      </div>
+      </main>
     </div>
-  </main>
+  </div>
 
   <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
   <script src="msal.js"></script>
