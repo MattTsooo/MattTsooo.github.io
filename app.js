@@ -9,6 +9,11 @@ const topbarStatus = document.getElementById("topbarStatus");
 
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
 
+function resetComposerHeight() {
+  if (!promptInput) return;
+  promptInput.style.height = "auto";
+}
+
 function setAuthenticatedUI(isAuthenticated, username = "") {
   document.body.classList.toggle("authenticated", isAuthenticated);
 
@@ -41,7 +46,7 @@ function setAuthenticatedUI(isAuthenticated, username = "") {
     promptInput.placeholder = isAuthenticated
       ? "Message JGM Eclipse..."
       : "Sign in to start chatting";
-    promptInput.style.height = "auto";
+    resetComposerHeight();
   }
 
   if (isAuthenticated) {
@@ -121,6 +126,7 @@ Or just ask a question.</div>
     </div>
   `;
   promptInput.value = "";
+  resetComposerHeight();
   if (!promptInput.disabled) {
     promptInput.focus();
   }
@@ -179,6 +185,7 @@ async function handleSend() {
 
   addMessage("user", text);
   promptInput.value = "";
+  resetComposerHeight();
   sendBtn.disabled = true;
 
   const typing = showTypingIndicator();
@@ -207,7 +214,7 @@ promptInput.addEventListener("keydown", (e) => {
 
 promptInput.addEventListener("input", () => {
   promptInput.style.height = "auto";
-  promptInput.style.height = Math.min(promptInput.scrollHeight, 220) + "px";
+  promptInput.style.height = Math.min(promptInput.scrollHeight, 160) + "px";
 });
 
 if (newChatBtn) {
