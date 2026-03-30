@@ -268,23 +268,19 @@ body.authenticated .chat-app {
 
 .message-row {
   display: flex;
+  justify-content: center;
   width: 100%;
 }
 
 .message {
   width: 100%;
-  max-width: 1180px;
+  max-width: 860px;
   display: flex;
   gap: 12px;
   align-items: flex-start;
 }
 
-.message.bot {
-  margin-right: auto;
-}
-
 .message.user {
-  margin-left: auto;
   flex-direction: row-reverse;
 }
 
@@ -310,7 +306,9 @@ body.authenticated .chat-app {
 }
 
 .message-content {
-  flex: 1;
+  flex: 0 1 auto;
+  width: fit-content;
+  max-width: min(720px, calc(100% - 46px));
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -335,7 +333,7 @@ body.authenticated .chat-app {
 }
 
 .composer {
-  max-width: 1180px;
+  max-width: 860px;
   margin: 0 auto;
   background: var(--panel);
   border: 1px solid var(--border);
