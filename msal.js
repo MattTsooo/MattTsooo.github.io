@@ -1,5 +1,108 @@
 const TENANT_ID = "d48b4dfc-4161-4966-b876-0c52e9d733e7";
 const CLIENT_ID = "967c6051-40fd-4acf-adbf-8f61359f253d";
+const ASSET_VERSION = "20260329-4";
+
+function ensureFreshStylesheet() {
+  const stylesheet = document.querySelector('link[rel="stylesheet"]');
+
+  if (!stylesheet) {
+    return;
+  }
+
+  const expectedHref = `style.css?v=${ASSET_VERSION}`;
+  if (!stylesheet.getAttribute("href")?.includes(expectedHref)) {
+    stylesheet.setAttribute("href", expectedHref);
+  }
+}
+
+function ensureCurrentAppShell() {
+  const hasCurrentShell = document.getElementById("loginView") && document.getElementById("chatApp");
+  if (hasCurrentShell) {
+    return;
+  }
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+    <div class="app-shell">
+      <section id="loginView" class="login-view">
+        <div class="login-card">
+          <div class="login-copy">
+            <p class="eyebrow">JGM Eclipse</p>
+            <h1>Sign in before using the chatbot.</h1>
+            <p class="login-text">
+              Use your Microsoft work account to access blog and dashboard audits.
+            </p>
+          </div>
+
+          <div class="login-actions">
+            <button id="loginBtn" class="login-btn">Continue with Microsoft</button>
+            <p id="authMessage" class="auth-message" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <div id="chatApp" class="chat-app hidden" aria-hidden="true">
+        <aside class="sidebar">
+          <div class="brand-block">
+            <p class="eyebrow">Workspace</p>
+            <h2>JGM Eclipse</h2>
+          </div>
+
+          <div id="signedInBadge" class="signed-in-badge" aria-live="polite">
+            <span class="status-dot"></span>
+            <div>
+              <p class="status-label">Signed in</p>
+              <p id="signedInUser" class="status-user">Loading account...</p>
+            </div>
+          </div>
+
+          <button id="newChatBtn" class="new-chat-btn">+ New chat</button>
+          <button id="logoutBtn" class="secondary-btn" type="button">Sign out</button>
+        </aside>
+
+        <main class="main">
+          <div class="topbar">
+            <span>JGM Eclipse</span>
+            <span id="topbarStatus" class="topbar-status">Checking sign-in...</span>
+          </div>
+
+          <section class="chat-container" id="chat">
+            <div class="message-row">
+              <div class="message bot">
+                <div class="avatar bot">AI</div>
+                <div class="message-content">
+Hi — I can audit blog posts and dashboards.
+
+Try:
+• /auditblog
+• /auditdashboard
+• /help
+
+Or just ask a question.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="composer-wrap">
+            <div class="composer">
+              <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
+              <div class="composer-actions">
+                <button id="sendBtn" class="send-btn">Send</button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  `;
+
+  Array.from(document.body.children)
+    .filter((element) => element.tagName !== "SCRIPT")
+    .forEach((element) => element.remove());
+
+  document.body.prepend(wrapper.firstElementChild);
+}
 
 const msalConfig = {
   auth: {
@@ -143,6 +246,9 @@ async function restoreSession() {
 }
 
 async function setupAuth() {
+  ensureFreshStylesheet();
+  ensureCurrentAppShell();
+
   const loginBtn = document.getElementById("loginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
