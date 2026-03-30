@@ -285,7 +285,7 @@ body.authenticated .chat-app {
 }
 
 .avatar {
-  width: 34px;
+  width: 50px;
   height: 34px;
   border-radius: 11px;
   display: flex;
