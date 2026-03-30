@@ -1,6 +1,6 @@
 const TENANT_ID = "d48b4dfc-4161-4966-b876-0c52e9d733e7";
 const CLIENT_ID = "967c6051-40fd-4acf-adbf-8f61359f253d";
-const ASSET_VERSION = "20260329-10";
+const ASSET_VERSION = "20260330-1";
 
 function ensureFreshStylesheet() {
   const stylesheet = document.querySelector('link[rel="stylesheet"]');
@@ -42,7 +42,9 @@ function ensureCurrentAppShell() {
       </section>
 
       <div id="chatApp" class="chat-app hidden" aria-hidden="true">
-        <aside class="sidebar">
+        <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Close menu"></button>
+
+        <aside id="sidebarPanel" class="sidebar">
           <div class="brand-block">
             <p class="eyebrow">Workspace</p>
             <h2>JGM Eclipse</h2>
@@ -62,7 +64,21 @@ function ensureCurrentAppShell() {
 
         <main class="main">
           <div class="topbar">
-            <span>JGM Eclipse</span>
+            <div class="topbar-main">
+              <button
+                id="mobileMenuBtn"
+                class="mobile-menu-btn"
+                type="button"
+                aria-label="Open menu"
+                aria-controls="sidebarPanel"
+                aria-expanded="false"
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+              <span class="topbar-title">JGM Eclipse</span>
+            </div>
             <span id="topbarStatus" class="topbar-status">Checking sign-in...</span>
           </div>
 

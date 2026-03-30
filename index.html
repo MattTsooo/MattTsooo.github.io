@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>JGM Eclipse</title>
-  <link rel="stylesheet" href="style.css?v=20260329-10" />
+  <link rel="stylesheet" href="style.css?v=20260330-1" />
 </head>
 <body>
   <div class="app-shell">
@@ -29,7 +29,9 @@
     </section>
 
     <div id="chatApp" class="chat-app hidden" aria-hidden="true">
-      <aside class="sidebar">
+      <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Close menu"></button>
+
+      <aside id="sidebarPanel" class="sidebar">
         <div class="brand-block">
           <p class="eyebrow">Workspace</p>
           <h2>JGM Eclipse</h2>
@@ -49,7 +51,21 @@
 
       <main class="main">
         <div class="topbar">
-          <span>JGM Eclipse</span>
+          <div class="topbar-main">
+            <button
+              id="mobileMenuBtn"
+              class="mobile-menu-btn"
+              type="button"
+              aria-label="Open menu"
+              aria-controls="sidebarPanel"
+              aria-expanded="false"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <span class="topbar-title">JGM Eclipse</span>
+          </div>
           <span id="topbarStatus" class="topbar-status">Checking sign-in...</span>
         </div>
 
@@ -84,7 +100,7 @@ Or just ask a question.
   </div>
 
   <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
-  <script src="msal.js?v=20260329-10"></script>
-  <script src="app.js?v=20260329-10"></script>
+  <script src="msal.js?v=20260330-1"></script>
+  <script src="app.js?v=20260330-1"></script>
 </body>
 </html>

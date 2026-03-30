@@ -6,12 +6,34 @@ const loginView = document.getElementById("loginView");
 const chatApp = document.getElementById("chatApp");
 const signedInUser = document.getElementById("signedInUser");
 const topbarStatus = document.getElementById("topbarStatus");
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const sidebarBackdrop = document.getElementById("sidebarBackdrop");
 
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
+const mobileMenuQuery = window.matchMedia("(max-width: 900px)");
 
 function resetComposerHeight() {
   if (!promptInput) return;
   promptInput.style.height = "auto";
+}
+
+function syncMobileMenuButton() {
+  if (!mobileMenuBtn) return;
+  mobileMenuBtn.setAttribute(
+    "aria-expanded",
+    document.body.classList.contains("menu-open") ? "true" : "false"
+  );
+}
+
+function closeMobileMenu() {
+  document.body.classList.remove("menu-open");
+  syncMobileMenuButton();
+}
+
+function toggleMobileMenu() {
+  if (!mobileMenuQuery.matches) return;
+  document.body.classList.toggle("menu-open");
+  syncMobileMenuButton();
 }
 
 function setAuthenticatedUI(isAuthenticated, username = "") {
@@ -35,6 +57,10 @@ function setAuthenticatedUI(isAuthenticated, username = "") {
     topbarStatus.textContent = isAuthenticated
       ? `Signed in as ${username || "Microsoft user"}`
       : "Signed out";
+  }
+
+  if (!isAuthenticated || !mobileMenuQuery.matches) {
+    closeMobileMenu();
   }
 
   if (sendBtn) {
@@ -218,8 +244,32 @@ promptInput.addEventListener("input", () => {
 });
 
 if (newChatBtn) {
-  newChatBtn.addEventListener("click", resetChat);
+  newChatBtn.addEventListener("click", () => {
+    resetChat();
+    closeMobileMenu();
+  });
 }
+
+if (mobileMenuBtn) {
+  mobileMenuBtn.addEventListener("click", toggleMobileMenu);
+  syncMobileMenuButton();
+}
+
+if (sidebarBackdrop) {
+  sidebarBackdrop.addEventListener("click", closeMobileMenu);
+}
+
+window.addEventListener("resize", () => {
+  if (!mobileMenuQuery.matches) {
+    closeMobileMenu();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeMobileMenu();
+  }
+});
 
 window.addEventListener("auth-state-changed", (event) => {
   const { isAuthenticated, username } = event.detail;
