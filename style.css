@@ -259,16 +259,15 @@ body.authenticated .chat-app {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 26px 22px 142px;
+  padding: 28px 24px 142px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
   overscroll-behavior: contain;
 }
 
 .message-row {
   display: flex;
-  justify-content: center;
   width: 100%;
 }
 
@@ -278,6 +277,15 @@ body.authenticated .chat-app {
   display: flex;
   gap: 12px;
   align-items: flex-start;
+}
+
+.message.bot {
+  margin-right: auto;
+}
+
+.message.user {
+  margin-left: auto;
+  flex-direction: row-reverse;
 }
 
 .avatar {
@@ -306,10 +314,15 @@ body.authenticated .chat-app {
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 20px 22px;
+  padding: 24px 26px;
   line-height: 1.58;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.message.user .message-content {
+  background: #141821;
+  border-color: #24314d;
 }
 
 .composer-wrap {
@@ -410,7 +423,7 @@ body.authenticated .chat-app {
 
   .chat-container {
     min-height: unset;
-    padding: 22px 16px 128px;
+    padding: 24px 16px 128px;
   }
 
   .composer-wrap {
