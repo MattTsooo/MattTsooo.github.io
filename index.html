@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>JGM Eclipse</title>
-  <link rel="stylesheet" href="style.css?v=20260330-6" />
+  <link rel="stylesheet" href="style.css?v=20260330-7" />
 </head>
 <body>
   <div class="app-shell">
@@ -30,24 +30,6 @@
 
     <div id="chatApp" class="chat-app hidden" aria-hidden="true">
       <button id="sidebarBackdrop" class="sidebar-backdrop" type="button" aria-label="Close menu"></button>
-
-      <div id="overscrollLogoTop" class="overscroll-logo overscroll-logo-top" aria-hidden="true">
-        <div class="logo-badge">
-          <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="" class="logo-image" />
-        </div>
-      </div>
-
-      <div id="overscrollLogoLeft" class="overscroll-logo overscroll-logo-left" aria-hidden="true">
-        <div class="logo-badge">
-          <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="" class="logo-image" />
-        </div>
-      </div>
-
-      <div id="overscrollLogoRight" class="overscroll-logo overscroll-logo-right" aria-hidden="true">
-        <div class="logo-badge">
-          <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="" class="logo-image" />
-        </div>
-      </div>
 
       <aside id="sidebarPanel" class="sidebar">
         <div class="brand-block">
@@ -82,9 +64,15 @@
               <span></span>
               <span></span>
             </button>
-            <div class="brand-logo-shell">
+            <a
+              class="brand-logo-shell brand-logo-link"
+              href="https://www.jgminnovation.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open JGM Innovation website in a new tab"
+            >
               <img src="Screenshot 2026-03-14 at 2.47.50 PM (1).png" alt="JGM logo" class="logo-image" />
-            </div>
+            </a>
             <span class="topbar-title">Eclipse</span>
           </div>
           <span id="topbarStatus" class="topbar-status">Checking sign-in...</span>
@@ -121,7 +109,7 @@ Or just ask a question.
   </div>
 
   <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
-  <script src="msal.js?v=20260330-6"></script>
-  <script src="app.js?v=20260330-6"></script>
+  <script src="msal.js?v=20260330-7"></script>
+  <script src="app.js?v=20260330-7"></script>
 </body>
 </html>

@@ -10,17 +10,9 @@ const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 const sidebarBackdrop = document.getElementById("sidebarBackdrop");
 const composerWrap = document.querySelector(".composer-wrap");
 const topbarElement = document.querySelector(".topbar");
-const overscrollLogoTop = document.getElementById("overscrollLogoTop");
-const overscrollLogoLeft = document.getElementById("overscrollLogoLeft");
-const overscrollLogoRight = document.getElementById("overscrollLogoRight");
 
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
 const mobileMenuQuery = window.matchMedia("(max-width: 900px)");
-const overscrollState = {
-  startX: 0,
-  startY: 0,
-  active: false
-};
 
 function resetComposerHeight() {
   if (!promptInput) return;
@@ -47,44 +39,6 @@ function updateComposerMetrics() {
 
 function queueComposerMetrics() {
   window.requestAnimationFrame(updateComposerMetrics);
-}
-
-function setLogoRevealState(element, opacity, transform) {
-  if (!element) return;
-  element.style.opacity = opacity > 0 ? `${opacity}` : "0";
-  element.style.transform = transform;
-}
-
-function resetOverscrollReveal() {
-  setLogoRevealState(overscrollLogoTop, 0, "translate(-50%, -74px) scale(0.58)");
-  setLogoRevealState(overscrollLogoLeft, 0, "translate(-74px, -50%) scale(0.58)");
-  setLogoRevealState(overscrollLogoRight, 0, "translate(74px, -50%) scale(0.58)");
-}
-
-function updateOverscrollReveal(deltaX, deltaY) {
-  const rawTopPull = chat.scrollTop <= 0 ? Math.max(0, Math.min(120, deltaY * 0.44)) : 0;
-  const rawLeftPull = Math.max(0, Math.min(120, deltaX * 0.34));
-  const rawRightPull = Math.max(0, Math.min(120, -deltaX * 0.34));
-
-  const topPull = Math.max(0, rawTopPull - 10);
-  const leftPull = Math.max(0, rawLeftPull - 10);
-  const rightPull = Math.max(0, rawRightPull - 10);
-
-  setLogoRevealState(
-    overscrollLogoTop,
-    Math.min(0.95, topPull / 110),
-    `translate(-50%, ${-74 + topPull * 0.34}px) scale(${0.58 + topPull / 320})`
-  );
-  setLogoRevealState(
-    overscrollLogoLeft,
-    Math.min(0.95, leftPull / 110),
-    `translate(${-74 + leftPull * 0.34}px, -50%) scale(${0.58 + leftPull / 320})`
-  );
-  setLogoRevealState(
-    overscrollLogoRight,
-    Math.min(0.95, rightPull / 110),
-    `translate(${74 - rightPull * 0.34}px, -50%) scale(${0.58 + rightPull / 320})`
-  );
 }
 
 function syncMobileMenuButton() {
@@ -349,33 +303,6 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-chat.addEventListener("touchstart", (event) => {
-  if (!mobileMenuQuery.matches || event.touches.length !== 1) return;
-  overscrollState.active = true;
-  overscrollState.startX = event.touches[0].clientX;
-  overscrollState.startY = event.touches[0].clientY;
-});
-
-chat.addEventListener("touchmove", (event) => {
-  if (!mobileMenuQuery.matches || !overscrollState.active || event.touches.length !== 1) return;
-
-  const currentTouch = event.touches[0];
-  updateOverscrollReveal(
-    currentTouch.clientX - overscrollState.startX,
-    currentTouch.clientY - overscrollState.startY
-  );
-}, { passive: true });
-
-chat.addEventListener("touchend", () => {
-  overscrollState.active = false;
-  resetOverscrollReveal();
-});
-
-chat.addEventListener("touchcancel", () => {
-  overscrollState.active = false;
-  resetOverscrollReveal();
-});
-
 window.addEventListener("auth-state-changed", (event) => {
   const { isAuthenticated, username } = event.detail;
   setAuthenticatedUI(isAuthenticated, username);
@@ -386,5 +313,4 @@ window.addEventListener("auth-state-changed", (event) => {
 });
 
 setAuthenticatedUI(false, "");
-resetOverscrollReveal();
 queueComposerMetrics();
