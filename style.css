@@ -194,11 +194,15 @@ body.authenticated .chat-app {
 }
 
 .logo-image {
-  width: 76%;
-  height: 76%;
+  width: 84%;
+  height: 84%;
   object-fit: contain;
   object-position: center center;
-  transform: translateX(2px);
+  display: block;
+}
+
+.brand-logo-shell .logo-image {
+  transform: translate(4px, 0) scale(1.04);
 }
 
 .brand-block {
