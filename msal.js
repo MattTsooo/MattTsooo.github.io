@@ -80,13 +80,10 @@ async function refreshIdToken() {
 }
 
 async function signIn() {
-  setAuthMessage("Opening Microsoft sign-in...");
+  setAuthMessage("Redirecting to Microsoft sign-in...");
 
   try {
-    const response = await msalInstance.loginPopup(loginRequest);
-    persistLogin(response);
-    await refreshIdToken();
-    setAuthMessage("");
+    await msalInstance.loginRedirect(loginRequest);
   } catch (error) {
     console.error("Microsoft login failed", error);
     setAuthMessage(error.message || "Sign-in failed. Check your Azure redirect URI settings.", true);
@@ -108,13 +105,13 @@ async function signOut() {
   }
 
   try {
-    await msalInstance.logoutPopup({
+    await msalInstance.logoutRedirect({
       account,
       postLogoutRedirectUri: `${window.location.origin}${window.location.pathname}`
     });
   } catch (error) {
     console.error("Microsoft logout failed", error);
-    setAuthMessage("Signed out locally, but Microsoft logout popup failed.", true);
+    setAuthMessage("Signed out locally, but Microsoft logout failed.", true);
   }
 }
 

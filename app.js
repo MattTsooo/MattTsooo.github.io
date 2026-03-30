@@ -10,6 +10,8 @@ const topbarStatus = document.getElementById("topbarStatus");
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
 
 function setAuthenticatedUI(isAuthenticated, username = "") {
+  document.body.classList.toggle("authenticated", isAuthenticated);
+
   if (loginView) {
     loginView.classList.toggle("hidden", isAuthenticated);
     loginView.setAttribute("aria-hidden", isAuthenticated ? "true" : "false");
@@ -39,6 +41,7 @@ function setAuthenticatedUI(isAuthenticated, username = "") {
     promptInput.placeholder = isAuthenticated
       ? "Message JGM Eclipse..."
       : "Sign in to start chatting";
+    promptInput.style.height = "auto";
   }
 
   if (isAuthenticated) {
