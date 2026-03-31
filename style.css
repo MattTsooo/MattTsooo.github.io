@@ -349,6 +349,20 @@ body.authenticated .chat-app {
   flex-direction: row-reverse;
 }
 
+.message-stack {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(720px, calc(100% - 46px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.message.user .message-stack {
+  align-items: flex-end;
+}
+
 .avatar {
   min-width: 74px;
   height: 34px;
@@ -372,9 +386,8 @@ body.authenticated .chat-app {
 }
 
 .message-content {
-  flex: 0 1 auto;
   width: fit-content;
-  max-width: min(720px, calc(100% - 46px));
+  max-width: 100%;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -387,6 +400,37 @@ body.authenticated .chat-app {
 .message.user .message-content {
   background: #141821;
   border-color: #24314d;
+}
+
+.message-actions {
+  display: flex;
+  width: 100%;
+  padding: 0 6px;
+}
+
+.message.user .message-actions {
+  justify-content: flex-end;
+}
+
+.message-copy-btn {
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.message-copy-btn:hover,
+.message-copy-btn:focus-visible {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: translateY(-1px);
 }
 
 .composer-wrap {
@@ -673,6 +717,11 @@ body.authenticated .chat-app {
     max-width: calc(100% - 36px);
     padding: 16px 18px;
     border-radius: 18px;
+  }
+
+  .message-copy-btn {
+    padding: 5px 9px;
+    font-size: 0.7rem;
   }
 
   .composer-wrap {

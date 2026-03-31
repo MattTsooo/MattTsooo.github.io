@@ -41,6 +41,107 @@ function queueComposerMetrics() {
   window.requestAnimationFrame(updateComposerMetrics);
 }
 
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const helper = document.createElement("textarea");
+  helper.value = text;
+  helper.setAttribute("readonly", "");
+  helper.style.position = "absolute";
+  helper.style.left = "-9999px";
+  document.body.appendChild(helper);
+  helper.select();
+  document.execCommand("copy");
+  document.body.removeChild(helper);
+}
+
+function setCopyButtonState(button, label) {
+  if (!button) return;
+
+  const originalLabel = button.dataset.defaultLabel || "Copy";
+  button.textContent = label;
+
+  if (button.copyResetTimer) {
+    window.clearTimeout(button.copyResetTimer);
+  }
+
+  button.copyResetTimer = window.setTimeout(() => {
+    button.textContent = originalLabel;
+  }, 1600);
+}
+
+async function handleCopyMessage(content, button) {
+  const text = content.textContent.trim();
+  if (!text) return;
+
+  try {
+    await copyTextToClipboard(text);
+    setCopyButtonState(button, "Copied");
+  } catch (error) {
+    setCopyButtonState(button, "Copy failed");
+  }
+}
+
+function createMessageRow(role, text = "") {
+  const row = document.createElement("div");
+  row.className = "message-row";
+
+  const message = document.createElement("div");
+  message.className = `message ${role}`;
+
+  const avatar = document.createElement("div");
+  avatar.className = `avatar ${role}`;
+  avatar.textContent = role === "user" ? "You" : "Eclipse";
+
+  const stack = document.createElement("div");
+  stack.className = "message-stack";
+
+  const content = document.createElement("div");
+  content.className = "message-content";
+  content.textContent = text;
+
+  const actions = document.createElement("div");
+  actions.className = "message-actions";
+
+  const copyBtn = document.createElement("button");
+  copyBtn.type = "button";
+  copyBtn.className = "message-copy-btn";
+  copyBtn.textContent = "Copy";
+  copyBtn.dataset.defaultLabel = "Copy";
+  copyBtn.setAttribute(
+    "aria-label",
+    role === "user" ? "Copy your message" : "Copy Eclipse response"
+  );
+  copyBtn.addEventListener("click", () => handleCopyMessage(content, copyBtn));
+
+  actions.appendChild(copyBtn);
+  stack.appendChild(content);
+  stack.appendChild(actions);
+  message.appendChild(avatar);
+  message.appendChild(stack);
+  row.appendChild(message);
+
+  return { row, content };
+}
+
+function hydrateExistingCopyButtons() {
+  document.querySelectorAll(".message-stack").forEach((stack) => {
+    const content = stack.querySelector(".message-content");
+    const button = stack.querySelector(".message-copy-btn");
+
+    if (!content || !button || button.dataset.bound === "true") {
+      return;
+    }
+
+    button.dataset.defaultLabel = button.textContent.trim() || "Copy";
+    button.dataset.bound = "true";
+    button.addEventListener("click", () => handleCopyMessage(content, button));
+  });
+}
+
 function syncMobileMenuButton() {
   if (!mobileMenuBtn) return;
   mobileMenuBtn.setAttribute(
@@ -107,23 +208,7 @@ function setAuthenticatedUI(isAuthenticated, username = "") {
 }
 
 function addMessage(role, text = "") {
-  const row = document.createElement("div");
-  row.className = "message-row";
-
-  const message = document.createElement("div");
-  message.className = `message ${role}`;
-
-  const avatar = document.createElement("div");
-  avatar.className = `avatar ${role}`;
-  avatar.textContent = role === "user" ? "You" : "Eclipse";
-
-  const content = document.createElement("div");
-  content.className = "message-content";
-  content.textContent = text;
-
-  message.appendChild(avatar);
-  message.appendChild(content);
-  row.appendChild(message);
+  const { row, content } = createMessageRow(role, text);
   chat.appendChild(row);
 
   scrollChatToBottom();
@@ -162,21 +247,18 @@ async function typeText(contentEl, text, speed = 8) {
 }
 
 function resetChat() {
-  chat.innerHTML = `
-    <div class="message-row">
-      <div class="message bot">
-        <div class="avatar bot">Eclipse</div>
-        <div class="message-content">Hi — I can help with blog posts and dashboards.
+  const welcome = createMessageRow(
+    "bot",
+    `Hi — I can help with blog posts and dashboards.
 
 Use:
 • /auditblog
 • /auditdashboard
 • /help
 
-Or just ask a question.</div>
-      </div>
-    </div>
-  `;
+Or just ask a question.`
+  );
+  chat.replaceChildren(welcome.row);
   promptInput.value = "";
   resetComposerHeight();
   if (!promptInput.disabled) {
@@ -313,4 +395,5 @@ window.addEventListener("auth-state-changed", (event) => {
 });
 
 setAuthenticatedUI(false, "");
+hydrateExistingCopyButtons();
 queueComposerMetrics();

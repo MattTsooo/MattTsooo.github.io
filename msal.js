@@ -1,6 +1,6 @@
 const TENANT_ID = "d48b4dfc-4161-4966-b876-0c52e9d733e7";
 const CLIENT_ID = "967c6051-40fd-4acf-adbf-8f61359f253d";
-const ASSET_VERSION = "20260330-17";
+const ASSET_VERSION = "20260330-18";
 
 function ensureFreshStylesheet() {
   const stylesheet = document.querySelector('link[rel="stylesheet"]');
@@ -95,7 +95,8 @@ function ensureCurrentAppShell() {
             <div class="message-row">
               <div class="message bot">
                 <div class="avatar bot">Eclipse</div>
-                <div class="message-content">
+                <div class="message-stack">
+                  <div class="message-content">
 Hi — I can audit blog posts and dashboards.
 
 Try:
@@ -104,6 +105,10 @@ Try:
 • /help
 
 Or just ask a question.
+                  </div>
+                  <div class="message-actions">
+                    <button type="button" class="message-copy-btn" aria-label="Copy Eclipse response">Copy</button>
+                  </div>
                 </div>
               </div>
             </div>
