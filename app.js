@@ -13,6 +13,13 @@ const topbarElement = document.querySelector(".topbar");
 
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
 const mobileMenuQuery = window.matchMedia("(max-width: 900px)");
+let shouldStickToBottom = true;
+
+function isNearBottom() {
+  if (!chat) return true;
+  const threshold = 72;
+  return chat.scrollHeight - chat.scrollTop - chat.clientHeight <= threshold;
+}
 
 function resetComposerHeight() {
   if (!promptInput) return;
@@ -211,11 +218,14 @@ function addMessage(role, text = "") {
   const { row, content } = createMessageRow(role, text);
   chat.appendChild(row);
 
-  scrollChatToBottom();
+  scrollChatToBottom(true);
   return content;
 }
 
-function scrollChatToBottom() {
+function scrollChatToBottom(force = false) {
+  if (!force && !shouldStickToBottom) {
+    return;
+  }
   chat.scrollTop = chat.scrollHeight;
 }
 
@@ -237,7 +247,7 @@ function showTypingIndicator() {
   };
 }
 
-async function typeText(contentEl, text, speed = 8) {
+async function typeText(contentEl, text, speed = 4) {
   contentEl.textContent = "";
   for (let i = 0; i < text.length; i++) {
     contentEl.textContent += text[i];
@@ -368,10 +378,15 @@ if (sidebarBackdrop) {
   sidebarBackdrop.addEventListener("click", closeMobileMenu);
 }
 
+chat.addEventListener("scroll", () => {
+  shouldStickToBottom = isNearBottom();
+});
+
 window.addEventListener("resize", () => {
   if (!mobileMenuQuery.matches) {
     closeMobileMenu();
   }
+  shouldStickToBottom = isNearBottom();
   queueComposerMetrics();
 });
 
@@ -396,4 +411,5 @@ window.addEventListener("auth-state-changed", (event) => {
 
 setAuthenticatedUI(false, "");
 hydrateExistingCopyButtons();
+shouldStickToBottom = true;
 queueComposerMetrics();
