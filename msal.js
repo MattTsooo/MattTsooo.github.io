@@ -1,6 +1,6 @@
 const TENANT_ID = "d48b4dfc-4161-4966-b876-0c52e9d733e7";
 const CLIENT_ID = "967c6051-40fd-4acf-adbf-8f61359f253d";
-const ASSET_VERSION = "20260331-1";
+const ASSET_VERSION = "20260404-1";
 
 function ensureFreshStylesheet() {
   const stylesheet = document.querySelector('link[rel="stylesheet"]');
@@ -116,8 +116,14 @@ Or just ask a question.
 
           <div class="composer-wrap">
             <div class="composer">
-              <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
+              <div id="attachmentTray" class="attachment-tray hidden" aria-live="polite"></div>
+              <div class="composer-input-row">
+                <button id="attachBtn" class="attach-btn" type="button" aria-label="Attach image">+</button>
+                <input id="attachmentInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden />
+                <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
+              </div>
               <div class="composer-actions">
+                <p id="composerStatus" class="composer-status" aria-live="polite"></p>
                 <button id="sendBtn" class="send-btn">Send</button>
               </div>
             </div>

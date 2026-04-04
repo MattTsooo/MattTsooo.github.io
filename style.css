@@ -116,7 +116,9 @@ body.authenticated .chat-app {
 .login-btn,
 .send-btn,
 .new-chat-btn,
-.secondary-btn {
+.secondary-btn,
+.attach-btn,
+.attachment-chip-remove {
   border: none;
   cursor: pointer;
   transition: transform 0.16s ease, opacity 0.16s ease, background 0.16s ease, border-color 0.16s ease;
@@ -125,7 +127,9 @@ body.authenticated .chat-app {
 .login-btn:hover,
 .send-btn:hover,
 .new-chat-btn:hover,
-.secondary-btn:hover {
+.secondary-btn:hover,
+.attach-btn:hover,
+.attachment-chip-remove:hover {
   transform: translateY(-1px);
 }
 
@@ -412,6 +416,27 @@ body.authenticated .chat-app {
   justify-content: flex-end;
 }
 
+.message-image-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 10px;
+  width: min(100%, 420px);
+}
+
+.message-image-strip-item {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #0d0d0d;
+}
+
+.message-image-strip-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
 .message-copy-btn {
   border-radius: 999px;
   padding: 5px 10px;
@@ -453,8 +478,74 @@ body.authenticated .chat-app {
   box-shadow: var(--shadow);
 }
 
-.composer textarea {
+.attachment-tray {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+}
+
+.attachment-chip {
+  min-width: 132px;
+  max-width: 132px;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+}
+
+.attachment-chip-image {
   width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.attachment-chip-label {
+  font-size: 0.72rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attachment-chip-remove {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.composer-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.attach-btn {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: var(--panel-3);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 1.4rem;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.composer textarea {
+  flex: 1;
+  width: auto;
   display: block;
   min-height: 42px;
   max-height: 160px;
@@ -474,7 +565,28 @@ body.authenticated .chat-app {
 .composer-actions {
   margin-top: 8px;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.composer-status {
+  flex: 1;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.composer-status[data-state="error"] {
+  color: #ff9a9a;
+}
+
+.composer-status:empty {
+  display: none;
+}
+
+.composer-actions .send-btn {
+  margin-left: auto;
 }
 
 .send-btn {
@@ -486,6 +598,7 @@ body.authenticated .chat-app {
 }
 
 .send-btn:disabled,
+.attach-btn:disabled,
 .login-btn:disabled,
 .new-chat-btn:disabled,
 .secondary-btn:disabled {
@@ -641,6 +754,11 @@ body.authenticated .chat-app {
     padding: 18px 20px;
   }
 
+  .message-image-strip {
+    width: min(100%, 320px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .composer-wrap {
     left: 0;
     padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
@@ -648,6 +766,16 @@ body.authenticated .chat-app {
 
   .composer {
     max-width: none;
+  }
+
+  .composer-input-row {
+    gap: 8px;
+  }
+
+  .attach-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
   }
 
   .login-view {
@@ -724,6 +852,11 @@ body.authenticated .chat-app {
     font-size: 0.7rem;
   }
 
+  .attachment-chip {
+    min-width: 118px;
+    max-width: 118px;
+  }
+
   .composer-wrap {
     padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
   }
@@ -739,5 +872,9 @@ body.authenticated .chat-app {
 
   .composer-actions {
     margin-top: 6px;
+  }
+
+  .composer-status {
+    font-size: 0.76rem;
   }
 }

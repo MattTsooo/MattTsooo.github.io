@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>JGM Eclipse</title>
-  <link rel="stylesheet" href="style.css?v=20260331-1" />
+  <link rel="stylesheet" href="style.css?v=20260404-1" />
 </head>
 <body>
   <div class="app-shell">
@@ -103,8 +103,14 @@ Or just ask a question.
 
         <div class="composer-wrap">
           <div class="composer">
-            <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
+            <div id="attachmentTray" class="attachment-tray hidden" aria-live="polite"></div>
+            <div class="composer-input-row">
+              <button id="attachBtn" class="attach-btn" type="button" aria-label="Attach image">+</button>
+              <input id="attachmentInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden />
+              <textarea id="prompt" placeholder="Message JGM Eclipse..."></textarea>
+            </div>
             <div class="composer-actions">
+              <p id="composerStatus" class="composer-status" aria-live="polite"></p>
               <button id="sendBtn" class="send-btn">Send</button>
             </div>
           </div>
@@ -114,7 +120,7 @@ Or just ask a question.
   </div>
 
   <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
-  <script src="msal.js?v=20260331-1"></script>
-  <script src="app.js?v=20260331-1"></script>
+  <script src="msal.js?v=20260404-1"></script>
+  <script src="app.js?v=20260404-1"></script>
 </body>
 </html>

@@ -2,6 +2,10 @@ const chat = document.getElementById("chat");
 const promptInput = document.getElementById("prompt");
 const sendBtn = document.getElementById("sendBtn");
 const newChatBtn = document.getElementById("newChatBtn");
+const attachBtn = document.getElementById("attachBtn");
+const attachmentInput = document.getElementById("attachmentInput");
+const attachmentTray = document.getElementById("attachmentTray");
+const composerStatus = document.getElementById("composerStatus");
 const loginView = document.getElementById("loginView");
 const chatApp = document.getElementById("chatApp");
 const signedInUser = document.getElementById("signedInUser");
@@ -13,7 +17,11 @@ const topbarElement = document.querySelector(".topbar");
 
 const BACKEND_URL = "https://bot0cba90.azurewebsites.net/audit";
 const mobileMenuQuery = window.matchMedia("(max-width: 900px)");
+const MAX_ATTACHMENTS = 4;
+const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 let shouldStickToBottom = true;
+let pendingAttachments = [];
 
 function isNearBottom() {
   if (!chat) return true;
@@ -25,6 +33,16 @@ function resetComposerHeight() {
   if (!promptInput) return;
   promptInput.style.height = "auto";
   queueComposerMetrics();
+}
+
+function setComposerStatus(message = "", state = "") {
+  if (!composerStatus) return;
+  composerStatus.textContent = message;
+  if (state) {
+    composerStatus.dataset.state = state;
+  } else {
+    delete composerStatus.dataset.state;
+  }
 }
 
 function updateComposerMetrics() {
@@ -46,6 +64,43 @@ function updateComposerMetrics() {
 
 function queueComposerMetrics() {
   window.requestAnimationFrame(updateComposerMetrics);
+}
+
+function summarizeAttachmentCount(count) {
+  return `Attached ${count} image${count === 1 ? "" : "s"}.`;
+}
+
+function ensureMessageText(text, attachments = []) {
+  const trimmed = (text || "").trim();
+  if (trimmed) {
+    return trimmed;
+  }
+
+  if (attachments.length) {
+    return summarizeAttachmentCount(attachments.length);
+  }
+
+  return "";
+}
+
+function renderImageStrip(attachments, className) {
+  const strip = document.createElement("div");
+  strip.className = className;
+
+  attachments.forEach((attachment, index) => {
+    const item = document.createElement("div");
+    item.className = `${className}-item`;
+
+    const image = document.createElement("img");
+    image.className = `${className}-image`;
+    image.src = attachment.dataUrl;
+    image.alt = attachment.name || `Attached image ${index + 1}`;
+
+    item.appendChild(image);
+    strip.appendChild(item);
+  });
+
+  return strip;
 }
 
 async function copyTextToClipboard(text) {
@@ -92,7 +147,7 @@ async function handleCopyMessage(content, button) {
   }
 }
 
-function createMessageRow(role, text = "") {
+function createMessageRow(role, text = "", attachments = []) {
   const row = document.createElement("div");
   row.className = "message-row";
 
@@ -108,7 +163,7 @@ function createMessageRow(role, text = "") {
 
   const content = document.createElement("div");
   content.className = "message-content";
-  content.textContent = text;
+  content.textContent = ensureMessageText(text, attachments);
 
   const actions = document.createElement("div");
   actions.className = "message-actions";
@@ -126,6 +181,9 @@ function createMessageRow(role, text = "") {
 
   actions.appendChild(copyBtn);
   stack.appendChild(content);
+  if (attachments.length) {
+    stack.appendChild(renderImageStrip(attachments, "message-image-strip"));
+  }
   stack.appendChild(actions);
   message.appendChild(avatar);
   message.appendChild(stack);
@@ -155,6 +213,104 @@ function syncMobileMenuButton() {
     "aria-expanded",
     document.body.classList.contains("menu-open") ? "true" : "false"
   );
+}
+
+function renderAttachmentTray() {
+  if (!attachmentTray) return;
+
+  attachmentTray.replaceChildren();
+  attachmentTray.classList.toggle("hidden", pendingAttachments.length === 0);
+
+  pendingAttachments.forEach((attachment) => {
+    const chip = document.createElement("div");
+    chip.className = "attachment-chip";
+
+    const preview = document.createElement("img");
+    preview.className = "attachment-chip-image";
+    preview.src = attachment.dataUrl;
+    preview.alt = attachment.name;
+
+    const label = document.createElement("div");
+    label.className = "attachment-chip-label";
+    label.textContent = attachment.name;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "attachment-chip-remove";
+    removeBtn.textContent = "Remove";
+    removeBtn.setAttribute("aria-label", `Remove ${attachment.name}`);
+    removeBtn.addEventListener("click", () => {
+      pendingAttachments = pendingAttachments.filter((item) => item.id !== attachment.id);
+      renderAttachmentTray();
+      queueComposerMetrics();
+    });
+
+    chip.appendChild(preview);
+    chip.appendChild(label);
+    chip.appendChild(removeBtn);
+    attachmentTray.appendChild(chip);
+  });
+}
+
+function clearPendingAttachments() {
+  pendingAttachments = [];
+  if (attachmentInput) {
+    attachmentInput.value = "";
+  }
+  renderAttachmentTray();
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error(`Failed to read ${file.name}.`));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function addAttachmentsFromFiles(fileList) {
+  const files = Array.from(fileList || []);
+  if (!files.length) return;
+
+  const nextAttachments = [];
+
+  for (const file of files) {
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+      setComposerStatus("Only PNG, JPG, WEBP, and GIF images are supported.", "error");
+      continue;
+    }
+
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      setComposerStatus(`"${file.name}" is larger than 5 MB.`, "error");
+      continue;
+    }
+
+    if (pendingAttachments.length + nextAttachments.length >= MAX_ATTACHMENTS) {
+      setComposerStatus(`You can attach up to ${MAX_ATTACHMENTS} images at once.`, "error");
+      break;
+    }
+
+    const dataUrl = await fileToDataUrl(file);
+    nextAttachments.push({
+      id: `${file.name}-${file.size}-${Date.now()}-${nextAttachments.length}`,
+      name: file.name,
+      mediaType: file.type,
+      dataUrl
+    });
+  }
+
+  if (!nextAttachments.length) {
+    queueComposerMetrics();
+    return;
+  }
+
+  pendingAttachments = [...pendingAttachments, ...nextAttachments];
+  setComposerStatus(
+    `${pendingAttachments.length} image${pendingAttachments.length === 1 ? "" : "s"} ready to send.`
+  );
+  renderAttachmentTray();
+  queueComposerMetrics();
 }
 
 function closeMobileMenu() {
@@ -199,12 +355,21 @@ function setAuthenticatedUI(isAuthenticated, username = "") {
     sendBtn.disabled = !isAuthenticated;
   }
 
+  if (attachBtn) {
+    attachBtn.disabled = !isAuthenticated;
+  }
+
   if (promptInput) {
     promptInput.disabled = !isAuthenticated;
     promptInput.placeholder = isAuthenticated
       ? "Message JGM Eclipse..."
       : "Sign in to start chatting";
     resetComposerHeight();
+  }
+
+  if (!isAuthenticated) {
+    clearPendingAttachments();
+    setComposerStatus("");
   }
 
   if (isAuthenticated) {
@@ -214,8 +379,8 @@ function setAuthenticatedUI(isAuthenticated, username = "") {
   queueComposerMetrics();
 }
 
-function addMessage(role, text = "") {
-  const { row, content } = createMessageRow(role, text);
+function addMessage(role, text = "", attachments = []) {
+  const { row, content } = createMessageRow(role, text, attachments);
   chat.appendChild(row);
 
   scrollChatToBottom(true);
@@ -276,7 +441,7 @@ Or just ask a question.`
   }
 }
 
-async function sendMessage(text) {
+async function sendMessage(text, attachments = []) {
   let token = window.authClient?.getIdToken() || localStorage.getItem("id_token");
 
   if (!token) {
@@ -289,7 +454,7 @@ async function sendMessage(text) {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify({ text })
+    body: JSON.stringify({ text, images: attachments })
   });
 
   if (response.status === 401 && window.authClient?.refreshIdToken) {
@@ -300,7 +465,7 @@ async function sendMessage(text) {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, images: attachments })
     });
   }
 
@@ -319,7 +484,12 @@ async function sendMessage(text) {
 
 async function handleSend() {
   const text = promptInput.value.trim();
-  if (!text) return;
+  const attachments = pendingAttachments.map(({ name, mediaType, dataUrl }) => ({
+    name,
+    media_type: mediaType,
+    data_url: dataUrl
+  }));
+  if (!text && attachments.length === 0) return;
 
   const token = window.authClient?.getIdToken() || localStorage.getItem("id_token");
   if (!token) {
@@ -327,15 +497,20 @@ async function handleSend() {
     return;
   }
 
-  addMessage("user", text);
+  addMessage("user", text, pendingAttachments);
   promptInput.value = "";
+  clearPendingAttachments();
+  setComposerStatus("");
   resetComposerHeight();
   sendBtn.disabled = true;
+  if (attachBtn) {
+    attachBtn.disabled = true;
+  }
 
   const typing = showTypingIndicator();
 
   try {
-    const data = await sendMessage(text);
+    const data = await sendMessage(text, attachments);
     typing.stop();
     await typeText(typing.content, data.reply || "No response returned.");
   } catch (error) {
@@ -343,6 +518,9 @@ async function handleSend() {
     await typeText(typing.content, `Error: ${error.message}`);
   } finally {
     sendBtn.disabled = false;
+    if (attachBtn) {
+      attachBtn.disabled = false;
+    }
     promptInput.focus();
   }
 }
@@ -362,9 +540,36 @@ promptInput.addEventListener("input", () => {
   queueComposerMetrics();
 });
 
+promptInput.addEventListener("paste", async (event) => {
+  const imageFiles = Array.from(event.clipboardData?.files || []).filter((file) =>
+    ALLOWED_IMAGE_TYPES.has(file.type)
+  );
+  const itemFiles = Array.from(event.clipboardData?.items || [])
+    .map((item) => item.getAsFile?.())
+    .filter((file) => file && ALLOWED_IMAGE_TYPES.has(file.type));
+  const filesToAdd = imageFiles.length ? imageFiles : itemFiles;
+
+  if (!filesToAdd.length) {
+    return;
+  }
+
+  event.preventDefault();
+  await addAttachmentsFromFiles(filesToAdd);
+});
+
+if (attachBtn && attachmentInput) {
+  attachBtn.addEventListener("click", () => attachmentInput.click());
+  attachmentInput.addEventListener("change", async (event) => {
+    await addAttachmentsFromFiles(event.target.files);
+    attachmentInput.value = "";
+  });
+}
+
 if (newChatBtn) {
   newChatBtn.addEventListener("click", () => {
     resetChat();
+    clearPendingAttachments();
+    setComposerStatus("");
     closeMobileMenu();
   });
 }
@@ -411,5 +616,6 @@ window.addEventListener("auth-state-changed", (event) => {
 
 setAuthenticatedUI(false, "");
 hydrateExistingCopyButtons();
+renderAttachmentTray();
 shouldStickToBottom = true;
 queueComposerMetrics();
